@@ -1,0 +1,1 @@
+# Elastic Stack on Docker
