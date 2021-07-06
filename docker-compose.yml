@@ -1,0 +1,60 @@
+version: '3.2'
+
+services:
+  elasticsearch:
+    image: elasticsearch:7.8.1
+    container_name: elasticsearch
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      discovery.type: single-node
+    volumes:
+      - type: bind
+        source: ./elasticsearch/config/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      - /usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - elk
+  kibana:
+    image: kibana:7.8.1
+    container_name: kibana
+    volumes:
+      - type: bind
+        source: ./kibana/config/kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true
+    ports:
+      - 5601:5601
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+  logstash:
+    image: logstash:7.8.1
+    container_name: logstash
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    volumes:
+      - type: bind
+        source: ./logstash/config/logstash.yml
+        target: /usr/share/logstash/config/logstash.yml
+        read_only: true
+      - type: bind
+        source: ./config/logstash/pipeline
+        target: /usr/share/logstash/pipeline
+        read_only: true
+    ports:
+      - 5001:5001
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+volumes:
+  elasticsearch:
+
+networks:
+  elk:
+    driver: bridge
