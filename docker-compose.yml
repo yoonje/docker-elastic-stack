@@ -42,7 +42,7 @@ services:
         target: /usr/share/logstash/config/logstash.yml
         read_only: true
       - type: bind
-        source: ./config/logstash/pipeline
+        source: ./logstash/pipeline
         target: /usr/share/logstash/pipeline
         read_only: true
     ports:
